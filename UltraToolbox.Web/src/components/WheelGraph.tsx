@@ -33,7 +33,7 @@ class WheelGraph extends React.Component<WheelGraphProps> implements IDevice, IJ
 
     private titleComponent?: WcComponent; 
     private wheelComponent?: WcComponent;
-    private wheel: Wheel = { label: '', categories: [] };
+    private wheel: Wheel = { title: '', categories: [] };
     
     canvasRef: React.RefObject<HTMLCanvasElement>;
 
@@ -147,7 +147,7 @@ class WheelGraph extends React.Component<WheelGraphProps> implements IDevice, IJ
 
 
         this.wheelComponent.world.addFigure(new WcRectangle(wheelWorldBoundary, this.settings.chartBackground, this.settings.chartBorder));
-        this.wheelComponent.world.addFigure(new WcText('Wheel of Ultra', new WcPointF(0, 1000), this.settings.titleFont, this.settings.titleBrush, TextAlignment.LeftBottom));
+        this.wheelComponent.world.addFigure(new WcText(this.wheel.title, new WcPointF(0, 1000), this.settings.titleFont, this.settings.titleBrush, TextAlignment.LeftBottom));
         this.wheelComponent.world.addFigure(new WcWheelGrid(new WcPointF(500, 500), this.wheel.categories, this.settings));
 
 

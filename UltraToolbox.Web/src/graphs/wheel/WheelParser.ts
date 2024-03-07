@@ -34,6 +34,7 @@ export const WheelLexer = new Lexer(wheelTokens, {
 
 export class WheelParser extends CstParser {
     public wheel: any;
+    private title: any;
     private categories: any;
 
     constructor() {
@@ -42,13 +43,21 @@ export class WheelParser extends CstParser {
         })
         
         this.wheel = this.RULE("wheel", () => {
-            this.MANY(() => { this.SUBRULE(this.categories) })
+            this.OPTION(() => { this.SUBRULE(this.title) });
+            this.MANY(() => { this.SUBRULE(this.categories) });
         });
 
         this.categories = this.RULE("categories", () => {
             this.CONSUME(StringLiteral);
             this.CONSUME(Colon);
             this.CONSUME(Score);
+        });
+
+        this.title = this.RULE("title", () => {
+            this.OPTION(() => {
+                this.CONSUME(Hashtag);
+                this.CONSUME(StringLiteral);
+            });
         });
 
 

@@ -6,12 +6,17 @@ const parserInstance = new WheelParser();
 const BaseWheelVisitor = parserInstance.getBaseCstVisitorConstructor();
 
 interface IWheelNode {
+    title: string;
     categories: Array<any>;
 }
 
 interface ICategoryNode {
     StringLiteral: any;
     Score: any;
+}
+interface ITitleNode {
+    Title: any;
+    StringLiteral: any;
 }
 
 export class JsonWheelVisitor extends BaseWheelVisitor {
@@ -26,6 +31,8 @@ export class JsonWheelVisitor extends BaseWheelVisitor {
 
     wheel(node: IWheelNode) {
 
+        const title = this.visit(node.title);
+
         let categories: Array<any> = [];
 
         if (node.categories != undefined)
@@ -34,8 +41,20 @@ export class JsonWheelVisitor extends BaseWheelVisitor {
         console.log('wheel');
 
         return {
+            title: title,
             categories: categories,
         };
+    }
+
+    title(node: ITitleNode) {
+        let title: string = '';
+
+        if (node.StringLiteral != undefined) {
+            title = node.StringLiteral[0].image;
+            title = title.substring(1, title.length - 1);
+        }
+
+        return title;
     }
 
     categories(node: ICategoryNode) {

@@ -1,6 +1,6 @@
 import { Category } from "./Category";
 
 export interface Wheel {
-    label: string;
+    title : string;
     categories: Category[];
 }
