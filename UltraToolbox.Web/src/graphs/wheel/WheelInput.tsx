@@ -4,34 +4,41 @@ import { JsonWheelVisitor } from "./JsonWheelVisitor";
 import { Wheel } from "./model/Wheel";
 
 
-type JsonInputProps = {
+type WheelInputProps = {
     onLoaded(wheel: Wheel): void;
+    initialValue: string | undefined;
 }
 
-export class WheelInput extends React.Component<JsonInputProps, { inputText: string }> {
+export class WheelInput extends React.Component<WheelInputProps, { inputText: string }> {
     private parser: WheelParser;
     private textAreaRef: React.RefObject<HTMLTextAreaElement>;
-    constructor(props: JsonInputProps) {
+    constructor(props: WheelInputProps) {
         super(props);
 
 
         this.textAreaRef = React.createRef<HTMLTextAreaElement>();
 
-        this.state = {
-            inputText: '"Endurance" : 6'
-        };
-
         this.parser = new WheelParser();
 
-        this.parse = this.parse.bind(this);
+        let initialValue = '"Endurance" : 6';
+
+        if (this.props.initialValue != undefined) {
+            initialValue = atob(this.props.initialValue);
+            this.loadInput(initialValue);
+        }
+
+        this.state = {
+            inputText: initialValue
+        };
+
+
+        this.loadText = this.loadText.bind(this);
     }
 
-    parse(changeArgs: React.ChangeEvent<HTMLTextAreaElement>) {
-        const text: string = changeArgs.currentTarget.value;
+    loadInput(text: string) {
+        this.parser.input = WheelLexer.tokenize(text).tokens;
 
-        this.parser.input = WheelLexer.tokenize(changeArgs.currentTarget.value).tokens;
-
-        var cst = this.parser.wheel();
+        const cst = this.parser.wheel();
 
         if (this.parser.errors.length > 0) {
             for (let index = 0; index < this.parser.errors.length; index++) {
@@ -40,14 +47,28 @@ export class WheelInput extends React.Component<JsonInputProps, { inputText: str
 
         }
         else {
-            var visitor = new JsonWheelVisitor();
+            const visitor = new JsonWheelVisitor();
 
-            var ast = visitor.visit(cst);
+            const ast = visitor.visit(cst);
 
             console.log(ast);
 
             this.props.onLoaded(ast);
         }
+    }
+
+    loadText(changeArgs: React.ChangeEvent<HTMLTextAreaElement>) {
+        const text: string = changeArgs.currentTarget.value;
+
+        this.loadInput(text);
+        this.updateNavigation(text);
+    }
+
+    updateNavigation(text: string) {
+        const scribble = btoa(text);
+
+        window.history.pushState({}, '', '/wheel/' + encodeURI(scribble));
+
 
         this.state = {
             inputText: text
@@ -56,7 +77,7 @@ export class WheelInput extends React.Component<JsonInputProps, { inputText: str
 
     render() {
         return (<>
-            <textarea id="wheelInput" ref={this.textAreaRef} rows={12} defaultValue={this.state.inputText} onChange={this.parse} ></textarea>
+            <textarea id="wheelInput" ref={this.textAreaRef} rows={12} defaultValue={this.state.inputText} onChange={this.loadText} ></textarea>
         </>);
     }
 }

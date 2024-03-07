@@ -58,6 +58,12 @@ class WheelGraph extends React.Component<WheelGraphProps> implements IDevice, IJ
         </>);
     }
 
+    componentDidMount() {
+        this.initializeChart();
+
+        this.draw();
+    }
+
     handleClick = (): void => {
         window.requestAnimationFrame(this.draw);
     }
@@ -75,9 +81,11 @@ class WheelGraph extends React.Component<WheelGraphProps> implements IDevice, IJ
 
         this.wheel = wheel;
 
-        this.initializeChart();
+        if (this.canvasRef.current) {
+            this.initializeChart();
 
-        this.draw();
+            this.draw();
+        }
     }
 
     invalidate(): void {
