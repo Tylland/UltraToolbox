@@ -6,7 +6,7 @@ const parserInstance = new WheelParser();
 const BaseWheelVisitor = parserInstance.getBaseCstVisitorConstructor();
 
 interface IWheelNode {
-    title: string;
+    title: any;
     categories: Array<any>;
 }
 
